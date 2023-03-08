@@ -1,14 +1,14 @@
-import { ThemeProvider } from "styled-components";
-import { Card } from "./components/Card";
-import { defaultTheme } from "./styles/themes/default";
+import { ThemeProvider } from 'styled-components'
+import { GlobalStyle } from './styles/global'
+
+import { defaultTheme } from './styles/themes/default'
 
 export function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Card variant="first"/>
-      <Card variant="second"/>
-      <Card variant="third"/>
-      <Card />
+      <h1>Pomodoro Timer</h1>
+
+      <GlobalStyle />
     </ThemeProvider>
   )
 }
