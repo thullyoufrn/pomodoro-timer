@@ -26,6 +26,7 @@ interface Cycle {
   task: string
   minutesAmount: number | null
   startDate: Date
+  interruptedDate?: Date
 }
 
 export function Home() {
@@ -59,14 +60,47 @@ export function Home() {
     reset()
   }
 
+  function handleInterruptCycle() {
+    setCycles((state) => 
+      state.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return { ...cycle, interruptedDate: new Date() }
+        } else {
+          return cycle
+        }
+      })
+    )
+    
+    setActiveCycleId(null)
+  }
+
+  // Fix it
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
+      const secondsDifference = differenceInSeconds(
+        new Date(),
+        activeCycle.startDate
+      )
+
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate),
-        )
+        if (secondsDifference >= totalSeconds) {
+          setCycles((state) => 
+            state.map((cycle) => {
+              if (cycle.id === activeCycleId) {
+                return { ...cycle, finishedDate: new Date() }
+              } else {
+                return cycle
+              }
+            })
+          )
+
+          setAmountSecondsPassed(totalSeconds)
+          clearInterval(interval)
+        } else {
+          setAmountSecondsPassed(secondsDifference)
+        }
       }, 1000)
     }
 
@@ -78,6 +112,7 @@ export function Home() {
   const totalSeconds = activeCycle?.minutesAmount
     ? activeCycle.minutesAmount * 60
     : 0
+
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
@@ -89,6 +124,8 @@ export function Home() {
   useEffect(() => {
     if (activeCycle) {
       document.title = `${minutes}:${seconds}`
+    } else {
+      document.title = 'Pomodoro Timer'
     }
   }, [minutes, seconds, activeCycle])
 
@@ -139,7 +176,7 @@ export function Home() {
         </CountdownContainer>
 
         {activeCycle ? (
-          <StopCountdownButton type="button">
+          <StopCountdownButton onClick={handleInterruptCycle} type="button">
             <HandPalm size={24} />
             Interrupt
           </StopCountdownButton>
