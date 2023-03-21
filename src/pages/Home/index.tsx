@@ -85,6 +85,11 @@ export function Home() {
     let interval: number
 
     if (activeCycle) {
+      const secondsDifference = differenceInSeconds(
+        new Date(),
+        activeCycle.startDate
+      )
+
       interval = setInterval(() => {
         const secondsDifference = differenceInSeconds(
           new Date(),
@@ -126,6 +131,8 @@ export function Home() {
   useEffect(() => {
     if (activeCycle) {
       document.title = `${minutes}:${seconds}`
+    } else {
+      document.title = 'Pomodoro Timer'
     }
   }, [minutes, seconds, activeCycle])
 
