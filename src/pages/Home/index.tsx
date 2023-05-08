@@ -65,8 +65,7 @@ export function Home() {
     setCycles((state) =>
       state.map((cycle) => {
         if (activeCycleId === cycle.id) {
-          cycle.interruptedDate = new Date()
-          return cycle
+          return { ...cycle, interruptedDate: new Date() }
         } else {
           return cycle
         }
@@ -85,11 +84,6 @@ export function Home() {
     let interval: number
 
     if (activeCycle) {
-      const secondsDifference = differenceInSeconds(
-        new Date(),
-        activeCycle.startDate
-      )
-
       interval = setInterval(() => {
         const secondsDifference = differenceInSeconds(
           new Date(),
@@ -107,8 +101,9 @@ export function Home() {
             }),
           )
 
+          setAmountSecondsPassed(totalSeconds)
+          clearInterval(interval)
           setActiveCycleId(null)
-          setAmountSecondsPassed(0)
         } else {
           setAmountSecondsPassed(secondsDifference)
         }
